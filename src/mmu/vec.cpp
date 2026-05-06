@@ -24,8 +24,16 @@ float cosine_similarity(float* a, float* b, int dims) {
     return dot / (mag_a * mag_b);
 }
 
+// This normalizes the vector(s) to reduce the cosine similarity function to just (a dot b). Eliminates finding the magnitude and dividing by it.
+void normalize(float* a, int dims) {
+    float mag = magnitude(a, dims);
+    for (int i = 0; i < dims; i++) {
+        a[i] = a[i] / mag;
+    }
+}
+
 int main() {
-    float a[3] = {1.0f, 0.0f, 0.0f};
+    float a[3] = {5.0f, 0.0f, 0.0f};
     float b[3] = {-1.0f, 0.0f, 0.0f};
     int dims = 3; // Passing dims manually for now
     float dot = dot_product(a, b, dims);
@@ -35,6 +43,12 @@ int main() {
     std::cout << "Magnitude: " << mag_a << std::endl;
     std::cout << "Cosine similarity: " << cos << std::endl;
     std::cout << "Dot product: " << dot << std::endl;
-
+    normalize(a, dims);
+    std::cout << "Normalized vector A: (";
+    for (int i = 0; i < dims; i++) {
+        std::cout << a[i];
+        if (i < dims-1) std::cout << ", ";
+    }
+    std::cout << ")" << std::endl;
     return 0;
 }
