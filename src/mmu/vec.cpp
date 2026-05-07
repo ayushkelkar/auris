@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <cstdint>
 
 // Returns the dot product of 2 vectors a and b with dimension dims
 float dot_product(float* a, float* b, int dims) {
@@ -32,6 +33,14 @@ void normalize(float* a, int dims) {
     }
 }
 
+// So this takes the input as the normalized vector, then quantizes it in a linear mapping from [-1, 1] -> [-127, 127]
+void quantize(float* input, int8_t* output, int dims) {
+    for(int i = 0; i < dims ; i++) {
+        output[i] = (int8_t)std::round(input[i]*127);
+    }
+    
+}
+
 int main() {
     float a[3] = {5.0f, 0.0f, 0.0f};
     float b[3] = {-1.0f, 0.0f, 0.0f};
@@ -48,6 +57,16 @@ int main() {
     for (int i = 0; i < dims; i++) {
         std::cout << a[i];
         if (i < dims-1) std::cout << ", ";
+    }
+    std::cout << ")" << std::endl;
+    
+    int8_t output[3];
+    quantize(a, output, dims);
+    
+    std::cout << "After Quantization: (";
+    for(int j = 0; j < dims ; j++) {
+        std::cout << (int)output[j];
+        if(j < dims-1) std::cout << ", ";
     }
     std::cout << ")" << std::endl;
     return 0;
