@@ -38,7 +38,13 @@ void quantize(float* input, int8_t* output, int dims) {
     for(int i = 0; i < dims ; i++) {
         output[i] = (int8_t)std::round(input[i]*127);
     }
-    
+}
+
+// Now this is the opposite of quantize()
+void dequantize(int8_t* input, float* output, int dims) {
+    for(int i = 0; i < dims ; i++) {
+        output[i] = input[i]/127.0f;
+    }
 }
 
 int main() {
@@ -68,6 +74,17 @@ int main() {
         std::cout << (int)output[j];
         if(j < dims-1) std::cout << ", ";
     }
+    std::cout << ")" << std::endl;
+
+    float output2[3];
+    dequantize(output, output2, dims);
+
+    std::cout << "After De-Quantization: (";
+    for(int j = 0; j < dims ; j++) {
+        std::cout << output2[j];
+        if(j < dims-1) std::cout << ", ";
+    }
+
     std::cout << ")" << std::endl;
     return 0;
 }
