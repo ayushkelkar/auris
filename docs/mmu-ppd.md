@@ -8,9 +8,15 @@ Tl;dr: Will develop own vector database engine, probably within MMU itself. So i
 
 ## 07-05-2026 02:00 - 05:00 :-
 ### Architecture Decisions
-- **Algorithm**: DiskANN/Vamana (from papers, clean implementation, no Microsoft code or else it might violate MIT license)
+- **Algorithm**: DiskANN/Vamana (from papers. DiskANN is MIT-licensed, so will have to credit that later)
+  - AVX-512 is kind of a must for this. So will need AVX-512 (My 228V does it fine. i5-12400 not so much T_T)
   - AVX-512 VNNI on Lion Cove P-cores (beam search, distance compute)
   - AVX2 VNNI on Skymont E-cores (I/O, background ops)
+  #### Why DiskANN?
+    - Every other index is not disk-first (FAISS, ScaNN, etc.)
+    - Graph-based (Vamana)
+    - Published papers so I can code it myself (Microsoft's DiskANN has fluff I don't need)
+    - Its already implemented in Bing, so its already proven.
 - **Storage**: Disk-first
 - **Similarity metric**: Cosine similarity → collapses to dot product after normalization
 - So far, made an n-dim `vec.cpp` which finds magnitude, cosine (direction), normalize, of a vector or two.
@@ -25,9 +31,9 @@ catastrophic forgetting.
 Its also effectively Probabilistic.
 
 #### Solution
-Training 1 → D1
-Training 2 → D1 + D2
-Training 3 → D1 + D2 + D3
+Training 1 → D1  
+Training 2 → D1 + D2  
+Training 3 → D1 + D2 + D3  
 Training N → D1 + D2 + ... + DN
 > Each training includes the previous training as well.
 >> **Important**: Revisit only if scale becomes an issue, shouldn't be a problem for the time being.
