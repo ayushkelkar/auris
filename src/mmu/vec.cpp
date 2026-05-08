@@ -1,8 +1,4 @@
-#include <iostream>
-#include <cmath>
-#include <cstdint>
-#include <immintrin.h>
-
+#include "vec.h"
 
 // Returns the dot product of 2 vectors a and b with dimension dims
 float dot_product(float* a, float* b, int dims) {
@@ -59,19 +55,4 @@ float vnni_dot_product(int8_t* a, int8_t* b, int dims) {
     for (int i = 0; i < 8; i++) res += result[i];
     res -= (128*sumofb);
     return (float)res/16129.0f;
-}
-
-int main() {
-    float a[32] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
-float b[32] = {-1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    int dims = 32;
-    std::cout << "Hello" << std::endl; // Keep here because clang bitches about iostream not being used
-    return 0;
 }
