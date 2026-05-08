@@ -30,29 +30,38 @@ void quantize(float* input, int8_t* output, int dims) {
 }
 
 float vnni_dot_product(int8_t* a, int8_t* b, int dims) {
-    // This function has 3 distinct parts. 
     // Part A1: Offset Encoding a by 128 so it is unsigned:
-    uint8_t a_unsigned[dims];
+    uint8_t* a_unsigned = new uint8_t[dims];
     int32_t sumofb = 0;
-    for(int i = 0; i < dims ; i++) {
-        a_unsigned[i] =a[i]+128;
-        // Part A2: Summing all elements of b into an int32 array:
+    for(int i = 0; i < dims; i++) {
+        a_unsigned[i] = a[i] + 128;
+        // Part A2: Summing all elements of b:
         sumofb += b[i];
     }
-    // Now we have an unsigned int8 a, and sum of all elements of b.  
+    // Now we have an unsigned int8 a, and sum of all elements of b.
 
     // Part B: SIMD Loop
     __m256i acc = _mm256_setzero_si256();
-    for (int i = 0; i < dims; i += 32) {
+    int i;
+    for (i = 0; i <= dims - 32; i += 32) {
         __m256i va = _mm256_loadu_si256((__m256i*)(a_unsigned + i));
         __m256i vb = _mm256_loadu_si256((__m256i*)(b + i));
         acc = _mm256_dpbusd_avx_epi32(acc, va, vb);
     }
+    // Tail loop for remainder
+    int32_t tail_res = 0;
+    for (; i < dims; i++) {
+        tail_res += (int32_t)a_unsigned[i] * (int32_t)b[i];
+    }
+
     // Part C: Storing the result as: res = sum of all elements in accumulator (an int8 value) and then subtracting (128 * sum of all terms of b) then dividing by 127^2 because without that, the res is in a quantized int8 space, not [-1,1]
     int32_t res = 0;
-    int result[8];
+    int32_t result[8];
     _mm256_storeu_si256((__m256i*)result, acc);
     for (int i = 0; i < 8; i++) res += result[i];
-    res -= (128*sumofb);
-    return (float)res/16129.0f;
+    res += tail_res;
+    res -= (128 * sumofb);
+
+    delete[] a_unsigned;
+    return (float)res / 16129.0f;
 }

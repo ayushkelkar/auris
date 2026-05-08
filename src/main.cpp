@@ -4,7 +4,7 @@
 
 int main() {
     // Defining all the variables
-    int num_vectors = 0, dims = 32, index = 0;
+    int num_vectors = 0, dims = 0, index = 0;
     int8_t** vectors = nullptr;
 
     // This is the hardcoded query vector
@@ -12,8 +12,10 @@ int main() {
                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    
-    load_db("mmu/mockdb.bin", vectors, num_vectors, dims);
+
+    if (!load_db("mmu/mockdb.bin", vectors, num_vectors, dims)) {
+        return 1;
+    }
     // Now the database of mock vectors is fully loaded
 
     int8_t query_quantized[32];
@@ -21,8 +23,12 @@ int main() {
     quantize(query, query_quantized, dims);
     // Now we have a normalized and quantized query vector
 
-    // Performing brute force search (I think ~Linear Search but *32 dims) on vectors array
+    // Performing brute force search on vectors array
     index = brute_force_search(query_quantized, vectors, num_vectors, dims);
     printf("Best match index: %d\n", index);
+
+    // save_db("mmu/mockdb.bin", vectors, num_vectors, dims);
+
+    free_db(vectors, num_vectors);
     return 0;
 }

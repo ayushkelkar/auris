@@ -58,3 +58,15 @@ Training N → D1 + D2 + ... + DN
 - Basically: Dot Product -> Read DB -> Search -> Find most similar/same vector in DB. The bare-bones is done so far.
 - Refactored a lot of `mmu` in the process.
 - Is this v1? Maybe.
+
+## 09-05-2026 02:30 - ? :-
+### Progress So Far
+- `vec.cpp`: Fixed `vnni_dot_product` by making `a_unsigned` a standard VLA (Variable Length Array) which was non-standard and might've cause issues. Issue was, it was declared at runtime. Now, it declares a raw pointer and allocates it as a heap.
+- `db.cpp`: `load_db` now returns a `bool`. `false` if the DB fails to open, and `true` otherwise. `save_db` is for future use. `free_db` is for purging the database from memory when its no longer needed.
+- Refactored `main.cpp` due to above listed fixes.
+
+### Compile Command (For future reference)
+```bash
+g++ -O2 -mavx2 -mavxvnni -o auris main.cpp mmu/vec.cpp mmu/db.cpp mmu/search.cpp
+```
+Run from `/src`.
