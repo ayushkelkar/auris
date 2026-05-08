@@ -50,3 +50,11 @@ Training N → D1 + D2 + ... + DN
 
 ### AVX-512 unavailable
 - Lunar Lake and consumer Intel CPUs don't have AVX-512 or AVX-512 VNNI (atleast most of them). Fallback to AVX-VNNI which halves the throughput (32 int8 per instruction v/s 64 on AVX512-VNNI) but is inevitable. Can't do anything.
+
+## 08-05-2026 15:30 - 17:00 :-
+### Progress So Far
+- Database reading (Vectors are read from a binary database) works.
+- Searching works.
+- Basically: Dot Product -> Read DB -> Search -> Find most similar/same vector in DB. The bare-bones is done so far.
+- Refactored a lot of `mmu` in the process.
+- Is this v1? Maybe.
