@@ -37,3 +37,16 @@ Training 3 → D1 + D2 + D3
 Training N → D1 + D2 + ... + DN
 > Each training includes the previous training as well.
 >> **Important**: Revisit only if scale becomes an issue, shouldn't be a problem for the time being.
+
+## 08-05-2026 03:30 - 06:30 :-
+### Progress So Far
+- AVX-VNNI works and gives a dot product of 2x 32-dim vectors as a float.
+- Some functions are deprecated and have been removed (refer previous commits).
+
+### Details about `vnni_dot_product`:
+- Uses offset encoding to convert vector `a` from a signed `int8` to an unsigned `int8` which is needed for the input argument in `_mm256_dpbusd_avx_epi32`.
+- Once the dot is done, the accumulator has the finished product, and its stored in an 8-length `int` array which is summed across in `res` then subtracted by `128*sumofb`.
+- The resultant `res` is divided by 127^2 and casted as a `float` because without this, the `res` is in a quantized int8 space, which ranges from [-127,127] while the float space is from [-1,1].
+
+### AVX-512 unavailable
+- Lunar Lake and consumer Intel CPUs don't have AVX-512 or AVX-512 VNNI (atleast most of them). Fallback to AVX-VNNI which halves the throughput (32 int8 per instruction v/s 64 on AVX512-VNNI) but is inevitable. Can't do anything.
