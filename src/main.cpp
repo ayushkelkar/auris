@@ -1,8 +1,11 @@
-#include "mmu/vec.h"
-#include "mmu/db.h"
-#include "mmu/search.h"
+//#include "mmu/vec.h"
+//#include "mmu/db.h"
+//#include "mmu/search.h"
+#include "inference/inf.h"
+#include <cstdio>
 
 int main() {
+    /*
     // Defining all the variables
     int num_vectors = 0, dims = 0, index = 0;
     int8_t** vectors = nullptr;
@@ -30,5 +33,18 @@ int main() {
     // save_db("mmu/mockdb.bin", vectors, num_vectors, dims);
 
     free_db(vectors, num_vectors);
+    */
+
+    // Inference test
+    if (!inference_init("/home/ayush/.models/qwen3.6/Qwen3.6-35B-A3B-UD-Q3_K_M.gguf")) {
+        printf("Failed to init inference\n");
+        return 1;
+    }
+
+    std::string response = infer("Hello, who are you?");
+    printf("Cela: %s\n", response.c_str());
+
+    inference_free();
+
     return 0;
 }
