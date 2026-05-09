@@ -3,6 +3,7 @@
 //#include "mmu/search.h"
 #include "inference/inf.h"
 #include <cstdio>
+#include <iostream>
 
 int main() {
     /*
@@ -37,14 +38,18 @@ int main() {
 
     // Inference test
     if (!inference_init("/home/ayush/.models/qwen3.6/Qwen3.6-35B-A3B-UD-Q3_K_M.gguf")) {
-        printf("Failed to init inference\n");
-        return 1;
+    printf("Failed to init inference\n");
+    return 1;
     }
 
-    std::string response = infer("Hello, who are you?");
-    printf("Cela: %s\n", response.c_str());
-
+    std::string input;
+    while (true) {
+        printf("You: ");
+        std::getline(std::cin, input);
+        if (input == "exit") break;
+        std::string response = infer(input);
+        printf("LLM: %s\n", response.c_str());
+    }
     inference_free();
-
     return 0;
 }

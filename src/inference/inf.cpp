@@ -1,5 +1,4 @@
 #include "inf.h"
-#include "../../third_party/llama.cpp/ggml/include/ggml.h"
 #include "../../third_party/llama.cpp/include/llama.h"
 #include <string>
 #include <vector>
@@ -43,13 +42,16 @@ bool inference_init(const char* model_path, int n_ctx) {
 }
 
 std::string infer(const std::string& input) {
-    // Tokenize input
-    std::vector<llama_token> tokens(input.size() + 32);
-    int n_tokens = llama_tokenize(vocab, input.c_str(), input.size(),
+    std::string prompt = 
+        "<|im_start|>system\nYou are Cela, a helpful AI companion.<|im_end|>\n"
+        "<|im_start|>user\n" + input + "<|im_end|>\n"
+        "<|im_start|>assistant\n<think>\n\n</think>\n";
+
+    // Tokenize
+    std::vector<llama_token> tokens(prompt.size() + 32);
+    int n_tokens = llama_tokenize(vocab, prompt.c_str(), prompt.size(),
                                   tokens.data(), tokens.size(), true, true);
-    if (n_tokens < 0) {
-        return "";
-    }
+    if (n_tokens < 0) return "";
     tokens.resize(n_tokens);
 
     // Decode input tokens
