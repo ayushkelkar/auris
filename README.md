@@ -3,7 +3,7 @@ Auris is a lightweight C/C++ runtime for conversational AI
 
 ## Building and Running
 ```bash
-cmake -B build
+cmake -B build -DGGML_VULKAN=ON
 cmake --build build -j
 ./build/auris
 ```

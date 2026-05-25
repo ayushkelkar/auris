@@ -43,13 +43,15 @@ int main() {
     }
 
     std::string input;
-    while (true) {
-        printf("You: ");
-        std::getline(std::cin, input);
-        if (input == "exit") break;
-        std::string response = infer(input);
-        printf("LLM: %s\n", response.c_str());
-    }
-    inference_free();
+while (true) {
+    printf("You: ");
+    std::getline(std::cin, input);
+    if (input == "exit") break;
+    printf("Cela: ");
+    fflush(stdout);
+    infer(input);
+    printf("\n");
+}
+inference_free();
     return 0;
 }
