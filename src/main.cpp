@@ -4,8 +4,18 @@
 #include "inference/inf.h"
 #include <cstdio>
 #include <iostream>
+#include <csignal>
+
+void handle_signal(int sig) {
+    printf("\nCaught signal %d, freeing model...\n", sig);
+    inference_free();
+    exit(0);
+}
 
 int main() {
+    signal(SIGINT, handle_signal);
+    signal(SIGTERM, handle_signal);
+
     /*
     // Defining all the variables
     int num_vectors = 0, dims = 0, index = 0;
@@ -38,20 +48,21 @@ int main() {
 
     // Inference test
     if (!inference_init("/home/ayush/.models/qwen3.6/Qwen3.6-35B-A3B-UD-Q3_K_M.gguf")) {
-    printf("Failed to init inference\n");
-    return 1;
+        printf("Failed to init inference\n");
+        return 1;
     }
 
     std::string input;
-while (true) {
-    printf("You: ");
-    std::getline(std::cin, input);
-    if (input == "exit") break;
-    printf("Cela: ");
-    fflush(stdout);
-    infer(input);
-    printf("\n");
-}
-inference_free();
+    while (true) {
+        printf("You: ");
+        std::getline(std::cin, input);
+        if (input == "exit") break;
+        printf("Cela: ");
+        fflush(stdout);
+        infer(input);
+        printf("\n");
+    }
+
+    inference_free();
     return 0;
 }

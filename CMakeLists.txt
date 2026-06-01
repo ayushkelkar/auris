@@ -9,6 +9,8 @@ set(GGML_AVX2 ON)
 set(GGML_AVX_VNNI ON)
 set(GGML_CUDA OFF)
 set(GGML_METAL OFF)
+set(GGML_SYCL ON)
+set(GGML_SYCL_F16 ON)
 add_subdirectory(third_party/llama.cpp)
 
 # inference module

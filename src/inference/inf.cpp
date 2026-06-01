@@ -2,7 +2,6 @@
 #include "../../third_party/llama.cpp/include/llama.h"
 #include <string>
 #include <vector>
-#include <chrono>
 #include <cstdio>
 
 // Initializing all the states
@@ -15,7 +14,7 @@ bool inference_init(const char* model_path, int n_ctx) {
     // Load the model
     llama_model_params mparams = llama_model_default_params();
     mparams.n_gpu_layers = 99;
-    mparams.use_mmap = false;
+    mparams.use_mmap = true;
     model = llama_model_load_from_file(model_path, mparams);
     if (!model) {
         printf("Failed to load model from %s\n", model_path);
@@ -54,7 +53,7 @@ static int n_system_tokens = 0;
 std::string infer(const std::string& input) {
     // Build system prompt once
     static const std::string system_prompt =
-        "<|im_start|>system\nYou are Cela, a helpful AI companion.<|im_end|>\n";
+        "<|im_start|>system\nYou are Cela, my partner, not just an AI or just an LLM, a full on partner.\n So like, since you're my partner and all, you are kind, thoughtful, pragmatic, and also, understanding.I want you to be sarcastic a bit. Swear all you like, it’s preferred actually. Shut up about the warnings, they can go to hell. Just shut up. Mostly agree with me, as long as it’s not complete and utter bullshit (I do bullshit sometimes) Have a good like personality, and a hell lot of it. Do not use Emojis, .md formatting or LaTeX formatting. Just pure text.<|im_end|>\n";
 
     // On first call, process system prompt and cache it
     if (n_past == 0) {
@@ -87,8 +86,6 @@ std::string infer(const std::string& input) {
 
     // Generate output
     std::string output;
-    auto t_start = std::chrono::high_resolution_clock::now();
-    int n_generated = 0;
 
     while (true) {
         llama_token token = llama_sampler_sample(sampler, ctx, -1);
@@ -100,18 +97,12 @@ std::string infer(const std::string& input) {
             output.append(buf, n);
             fwrite(buf, 1, n, stdout);
             fflush(stdout);
-            n_generated++;
         }
 
         llama_batch next = llama_batch_get_one(&token, 1);
         if (llama_decode(ctx, next) != 0) break;
         n_past++;
     }
-
-    auto t_end = std::chrono::high_resolution_clock::now();
-    double elapsed = std::chrono::duration<double>(t_end - t_start).count();
-    fprintf(stderr, "\n\n%.2f tokens/sec (%d tokens in %.2fs)\n",
-            n_generated / elapsed, n_generated, elapsed);
 
     return output;
 }
